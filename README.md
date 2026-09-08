@@ -4,7 +4,7 @@
 
 A terminal UI for configuring and monitoring the **Mictrack MT710** GPS
 tracker over its USB config cable — a local, more complete alternative to
-https://config.mictrack.com.
+<https://config.mictrack.com>.
 
 ```
 ┌─ MT710 Config Tool ──────────────────────────────┬─ Device log ────────┐
@@ -55,16 +55,18 @@ https://config.mictrack.com.
 ```bash
 # with pip
 python3 -m venv .venv
-.venv/bin/pip install -e '.[dev]'
+source .venv/bin/activate
+pip install -e .
 
 # or with uv (what this repo currently uses — venv has no pip)
 uv venv .venv
-uv pip install -e '.[dev]' --python .venv/bin/python
+source .venv/bin/activate
+uv pip install -e .
 
-.venv/bin/mt710              # TUI (version chip sits in the console header)
-.venv/bin/mt710 --version    # print version + resolved module path
-.venv/bin/mt710 --probe      # scripted read-only check (ETS + RCONF)
-.venv/bin/mt710 --list-ports
+/mt710              # TUI (version chip sits in the console header)
+mt710 --version    # print version + resolved module path
+mt710 --probe      # scripted read-only check (ETS + RCONF)
+mt710 --list-ports
 ```
 
 Requires Linux/macOS (or Windows) + a USB config cable
