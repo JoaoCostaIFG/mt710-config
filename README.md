@@ -1,5 +1,7 @@
 # MT710 Config Tool
 
+![Mictrack MT710 GPS tracker](assets/mt710-photo.jpg)
+
 A terminal UI for configuring and monitoring the **Mictrack MT710** GPS
 tracker over its USB config cable — a local, more complete alternative to
 https://config.mictrack.com.
@@ -122,12 +124,31 @@ passive ETS/QTS session tracking. UI layout is additionally verified via
 Textual pilot runs that check the *painted* output at several terminal
 sizes.
 
-## Sources
+## The device
 
-- `mictrack_mt710_docs/Mictrack_MT710_Commands_List.pdf` (SMS/USB/downlink
-  command tables, config-info descriptions)
-- `mictrack_mt710_docs/MT710_User_Manual_V1.0.pdf` (behaviour, LEDs, modes)
-- https://config.mictrack.com v1.2.32 (validator rules + timings,
-  hardware-validated)
-- Your actual device (FW V2.1.8): ETS/RCONF verified live during
-  development.
+![MT710 interface](assets/mt710-interface.jpg)
+
+Cat M1 & NB-IoT (2G fallback) tracker, IP68, 650 mAh (≈12 months at one
+report/day), GPS/WiFi/LBS positioning, Qualcomm Gen 8C GNSS, Nano SIM.
+Programmable over USB, SMS or platform downlink.
+
+## Sources & disclaimer
+
+This is an **independent, community tool** — not affiliated with,
+endorsed by, or supported by Mictrack.
+
+Documentation sources used to build it:
+
+- `mictrack_mt710_docs/` — official Mictrack PDFs (command lists + user
+  manual), redistributed here for interoperability. Copyright Mictrack;
+  see their [site](https://www.mictrack.com) for originals.
+- The public web config tool (config.mictrack.com v1.2.32) — its
+  client-side JS was studied to extract hardware-validated validator
+  rules and protocol timings.
+- Live testing against a real MT710 (FW V2.1.8).
+
+"Mictrack" and "MT710" are trademarks of Mictrack; LEDs, modes and
+firmware behaviour described here come from the vendor's own documents
+and may change with firmware updates — **always verify against your own
+device** (the tool's Reference tab documents every known discrepancy
+between sources).
