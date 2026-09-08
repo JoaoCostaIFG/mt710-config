@@ -728,6 +728,24 @@ class MT710App(App[None]):
         btn.label = "Connect (F2)" if state != "connected" \
             else "Disconnect (F2)"
 
+    @staticmethod
+    def _friendly_value(key: str, value: str) -> str:
+        """Humanise MT710-specific fields for the Device grid."""
+        if key == "GEO":
+            m = re.match(r"Lat=([-\d.]+),lng=([-\d.]+),R=(\d+)", value)
+            if m:
+                lat, lng, r = m.groups()
+                if float(lat) == 0.0 and float(lng) == 0.0 and int(r) == 0:
+                    return "no home geofence set (see MODE,8 / GEO)"
+                return f"{lat}, {lng} · radius {r} m"
+        if key == "AP":
+            parts = value.split(",")
+            macs = [p for p in parts[2:6] if p]
+            if macs:
+                return f"{len(macs)} home MAC(s): {' '.join(macs)}"
+            return "no home MACs set (see MODE,8 / AP)"
+        return value
+
     def _on_config(self, dump) -> None:
         st = self.query_one("#st_device", Static)
         st.update(f"[b]device:[/b] {escape(dump.model)}  "
@@ -742,12 +760,14 @@ class MT710App(App[None]):
             if value is None:
                 continue
             label, help_ = RCONF_FIELDS.get(key, (key, ""))
-            shown.append((f"{label} ({key})", value, help_))
+            shown.append((f"{label} ({key})", self._friendly_value(key, value),
+                          help_))
             seen.add(key)
         for key, value in dump.fields:
             if key not in seen and key not in RCONF_HIDDEN:
                 label, help_ = RCONF_FIELDS.get(key, (key, ""))
-                shown.append((f"{label} ({key})", value, help_))
+                shown.append((f"{label} ({key})", self._friendly_value(key, value),
+                              help_))
         for row in shown:
             table.add_row(*(escape(c) for c in row))
         self.query_one("#rawdump", Static).update(

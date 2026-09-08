@@ -82,7 +82,7 @@ RCONF_FIELDS: dict[str, tuple[str, str]] = {
 
 # fields hidden from the friendly grid (internal / noise)
 RCONF_HIDDEN = {"EDRX", "CSN", "ANG", "SAVE", "AU", "IN", "GU", "SOC",
-                "TZ", "LIC", "UP", "ISSUED", "AP", "GEO", "LTP"}
+                "TZ", "LIC", "UP", "ISSUED", "LTP"}
 
 # display order for the device-info grid
 RCONF_ORDER = ["MDL", "MODEL", "ID", "SV", "MV", "HV", "ISD", "CCID",
