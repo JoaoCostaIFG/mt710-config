@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mt710-config"
+version = "0.1.2"
+description = "USB configuration tool & serial console for the Mictrack MT710 GPS tracker"
+requires-python = ">=3.10"
+dependencies = [
+    "pyserial>=3.5",
+    "textual>=0.80.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+mt710 = "mt710.app:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mt710"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
