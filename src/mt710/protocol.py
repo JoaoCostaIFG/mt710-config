@@ -6,10 +6,10 @@ calibrated against real hardware:
 ===========================  =========  =========  ==========
 command class                match      idle (ms)  timeout ms
 ===========================  =========  =========  ==========
-ETS handshake                ETS,OK     —          1800
+ETS handshake                ETS,OK     -          1800
 RCONF dump                   IN:        700        6000
 sequence step                <CFG>:     600        4000
-RESET                        —          800        5000
+RESET                        -          800        5000
 DBG / QTS                    <CFG>:|OK  400        2500
 ===========================  =========  =========  ==========
 """
@@ -211,7 +211,7 @@ class MT710Session:
             self.ets_active = True
             self._emit("ets", {"active": True})
         elif line.startswith("<CFG>:QTS,OK"):
-            # QTS saves and exits config mode — the session is over
+            # QTS saves and exits config mode; the session is over
             self.ets_active = False
             self._emit("ets", {"active": False, "why": "QTS exited config"})
         body = strip_prefix(line)
@@ -301,7 +301,7 @@ class MT710Session:
         """Run commands top-to-bottom; stop at first failure.
 
         Tolerance rule from the web tool: if the ack of the LAST step is
-        missing and a reboot is expected, treat it as OK — MODE can reboot
+        missing and a reboot is expected, treat it as OK; MODE can reboot
         immediately after acking, faster than the reply can be flushed.
         """
         results: list[StepResult] = []

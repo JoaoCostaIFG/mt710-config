@@ -2,11 +2,11 @@
 
 Sources, in order of authority:
 
-1. ``config.mictrack.com`` v1.2.32 JS — validator rules validated on real
+1. ``config.mictrack.com`` v1.2.32 JS: validator rules validated on real
    hardware by Mictrack (whitelist, arg ranges, protocol quirks).
-2. ``Mictrack_MT710_Commands_List.pdf`` — official command tables (USB,
+2. ``Mictrack_MT710_Commands_List.pdf``: official command tables (USB,
    SMS, downlink) with ranges, replies and defaults.
-3. ``MT710_User_Manual_V1.0.pdf`` — behavioural explanations.
+3. ``MT710_User_Manual_V1.0.pdf``: behavioural explanations.
 
 Where the sources disagree the conflict is recorded in ``Command.note``
 and surfaced in the UI.
@@ -51,7 +51,7 @@ class ArgSpec:
     help: str = ""
     optional: bool = False       # may be omitted entirely (shorter arg list)
     allow_empty: bool = False    # must be present but may be "" (placeholder)
-    must_be_empty: bool = False  # reserved field — must stay blank
+    must_be_empty: bool = False  # reserved field (must stay blank)
     pattern: Optional[str] = None  # regex the whole field must match
 
 
@@ -103,7 +103,7 @@ def suspicious_char_reason(line: str) -> Optional[str]:
     """Characters that paste from Excel/PDFs/IMEs silently inject."""
     for ch, repl in FULLWIDTH_MAP.items():
         if ch in line:
-            return (f"contains a full-width '{ch}' (should be '{repl}') — "
+            return (f"contains a full-width '{ch}' (should be '{repl}'), "
                     "common when pasting from Excel or a Chinese input method")
     if _FULLWIDTH_DIGITS.search(line):
         return "contains full-width digits (０-９)"
@@ -131,7 +131,7 @@ def _in_range(v: str, lo: float, hi: float) -> bool:
 
 # ── MODE validation ───────────────────────────────────────────────
 # arg-count map from the web validator; ranges cross-checked with the PDF
-# (the PDF contradicts itself once for MODE,1 — "60-600" in the USB table
+# (the PDF contradicts itself once for MODE,1: "60-600" in the USB table
 # vs "10-600" everywhere else; 10-600 is used, matching the web tool).
 
 MODE_ARG_COUNT = {
@@ -153,17 +153,17 @@ MODE_RANGES = {
 }
 
 MODE_NAMES = {
-    "0": "Mix Mode — fast reporting when moving, slow when still",
-    "1": "Real-time Mode — fixed interval, GPS+TCP always on",
-    "2": "GPS Auto Mode — configurable GPS/TCP always-on behaviour",
-    "3": "Deep Sleep Mode — one report every 1–24 h (max battery)",
-    "4": "Vibrate Mode — wakes and reports on motion",
-    "5": "WiFi-only Mode — WiFi positioning, no GPS",
-    "6": "SMS-only Mode — only responds to SMS commands",
-    "7": "Smart Mode — low-power mix (GPS priority)",
-    "8": "Home Mode — sleeps indoors, tracks outdoors (MT710)",
+    "0": "Mix Mode: fast reporting when moving, slow when still",
+    "1": "Real-time Mode: fixed interval, GPS+TCP always on",
+    "2": "GPS Auto Mode: configurable GPS/TCP always-on behaviour",
+    "3": "Deep Sleep Mode: one report every 1–24 h (max battery)",
+    "4": "Vibrate Mode: wakes and reports on motion",
+    "5": "WiFi-only Mode: WiFi positioning, no GPS",
+    "6": "SMS-only Mode: only responds to SMS commands",
+    "7": "Smart Mode: low-power mix (GPS priority)",
+    "8": "Home Mode: sleeps indoors, tracks outdoors (MT710)",
     "9": "Smart Mode, WiFi positioning priority (MT710)",
-    "10": "Clock Mode — scheduled reports at fixed UTC times",
+    "10": "Clock Mode: scheduled reports at fixed UTC times",
 }
 
 MODE_EXPLAIN = {
@@ -252,11 +252,11 @@ NWM_NOTE = (
 
 REGION_PRESETS = {
     "global": {"nwm": "NWM,0,0,2", "band": "BAND,0,0,f",
-               "label": "Global — LTE-M + 2G fallback"},
+               "label": "Global: LTE-M + 2G fallback"},
     "usa":    {"nwm": "NWM,3,0,2", "band": "BAND,0,0,f",
-               "label": "USA / Canada — LTE-M only"},
+               "label": "USA / Canada: LTE-M only"},
     "au":     {"nwm": "NWM,3,0,2", "band": "BAND,28,0,f",
-               "label": "Australia / NZ — LTE-M, lock Band 28"},
+               "label": "Australia / NZ: LTE-M, lock Band 28"},
 }
 
 
@@ -280,8 +280,8 @@ def register(cmd: Command) -> Command:
 
 register(Command(
     "ETS", "Enter config session", Category.SESSION, [], "ETS", "ETS",
-    "ETS,OK", "—", Save.QUERY,
-    "Wake the device and open the USB config session. Must be sent first — "
+    "ETS,OK", "-", Save.QUERY,
+    "Wake the device and open the USB config session. Must be sent first; "
     "most other commands are silently dropped without it.",
     note="Device replies 'WAIT CONFIG CMD......' while still booting; retry. "
          "The session ends on reboot, power cycle or MODE change.",
@@ -290,7 +290,7 @@ register(Command(
 
 register(Command(
     "QTS", "Save & exit session", Category.SESSION, [], "QTS", "QTS",
-    "QTS,OK", "—", Save.SAVES,
+    "QTS,OK", "-", Save.SAVES,
     "Save all pending settings and exit config mode WITHOUT rebooting.",
 ))
 
@@ -300,7 +300,7 @@ register(Command(
              help="PDF documents RCONF,1..RCONF,4 as paged dumps over the "
                   "downlink channel; plain RCONF over USB returns "
                   "everything.", optional=True)],
-    "RCONF", "RCONF", "multi-line KEY:value dump, ends with IN:", "—",
+    "RCONF", "RCONF", "multi-line KEY:value dump, ends with IN:", "-",
     Save.QUERY,
     "Read the device's entire configuration as KEY:value lines (model, "
     "IMEI, firmware, server, mode, sensors…).",
@@ -312,10 +312,10 @@ register(Command(
              help="Access Point Name from your SIM provider. Max 36 chars, "
                   "no spaces or commas."),
      ArgSpec("user", "str", example="", allow_empty=True,
-             help="APN username — most IoT SIMs need none; leave empty but "
+             help="APN username (most IoT SIMs need none); leave empty but "
                   "keep the comma."),
      ArgSpec("pass", "str", example="", allow_empty=True,
-             help="APN password — most IoT SIMs need none.")],
+             help="APN password (most IoT SIMs need none).")],
     "803,<apn>,<user>,<pass>", "803,cmnbiot,,", "803,OK", "empty",
     Save.EXPLICIT,
     "Set the cellular Access Point Name (and optional username/password) "
@@ -325,7 +325,7 @@ register(Command(
 register(Command(
     "804", "Set server IP/port", Category.NETWORK,
     [ArgSpec("server", "str", example="e.trackits.com",
-             help="Domain or IP — no http:// prefix, no path, no spaces."),
+             help="Domain or IP: no http:// prefix, no path, no spaces."),
      ArgSpec("port", "int", 1, 65535, unit="port", example="7700")],
     "804,<server>,<port>", "804,e.trackits.com,7700", "804,OK", "empty",
     Save.EXPLICIT,
@@ -356,7 +356,7 @@ register(Command(
      ArgSpec("nbiot", "int", 0, 99, unit="NB-IoT band", example="0",
              help="0 = automatic. e.g. 8 → Band 8 (EU, factory default)."),
      ArgSpec("f", "enum", options=["f"],
-             help="literal 'f' — GSM stays on automatic quad-band")],
+             help="literal 'f'; GSM stays on automatic quad-band")],
     "BAND,<catM1>,<NB-IoT>,f", "BAND,28,0,f", "BAND,OK",
     "ANY (M1), 8 (NB1)", Save.EXPLICIT,
     "Lock specific LTE-M / NB-IoT bands. Use 0,0,f for automatic "
@@ -399,12 +399,12 @@ register(Command(
     [ArgSpec("mode", "enum", options=sorted(MODE_ARG_COUNT, key=int),
              example="1"),
      ArgSpec("params", "str", example="60",
-             help="Mode-specific interval parameters — see the mode table "
+             help="Mode-specific interval parameters; see the mode table "
                   "in the reference browser.")],
     "MODE,<n>[,params…]", "MODE,1,60", "MODE,OK", "MODE,8,10s,1,0",
     Save.SAVES_REBOOT,
     "Set the working mode (power/reporting behaviour). SAVES SETTINGS AND "
-    "REBOOTS — always send last in a batch.",
+    "REBOOTS; always send last in a batch.",
     note="PDF lists MODE,1 as '60-600 s' in its USB table but '10-600 s' "
          "everywhere else; the hardware-validated range 10-600 is used.",
 ))
@@ -415,7 +415,7 @@ register(Command(
              help="Real-time tracking interval while locked."),
      ArgSpec("y", "int", 1, 60, unit="min",
              help="After this long, revert to the previous working mode.")],
-    "LOCK,<sec>,<min>", "LOCK,10,1", "LOCK,OK", "—", Save.EXPLICIT,
+    "LOCK,<sec>,<min>", "LOCK,10,1", "LOCK,OK", "-", Save.EXPLICIT,
     LOCK_EXPLAIN,
 ))
 
@@ -482,21 +482,21 @@ register(Command(
 
 register(Command(
     "WHERE", "Query position now", Category.POSITIONING, [],
-    "WHERE", "WHERE", "current coordinates", "—", Save.QUERY,
+    "WHERE", "WHERE", "current coordinates", "-", Save.QUERY,
     "Ask the device for its current GPS latitude/longitude.",
     mt710_only=True,
 ))
 
 register(Command(
     "SCAN", "Scan WiFi APs", Category.HOME, [], "SCAN", "SCAN",
-    "list of MAC addresses", "—", Save.QUERY,
+    "list of MAC addresses", "-", Save.QUERY,
     "Trigger a WiFi scan (find candidate Home MAC addresses).",
     mt710_only=True,
 ))
 
 register(Command(
     "SEARCH", "Search current position", Category.HOME, [], "SEARCH",
-    "SEARCH", "current lat/lng", "—", Save.QUERY,
+    "SEARCH", "current lat/lng", "-", Save.QUERY,
     "Search the current position (used together with the Home geofence "
     "feature).",
     mt710_only=True,
@@ -505,9 +505,9 @@ register(Command(
 register(Command(
     "AP", "Set Home WiFi MACs", Category.HOME,
     [ArgSpec("r1", "str", must_be_empty=True,
-             help="reserved — must be empty"),
+             help="reserved (must be empty)"),
      ArgSpec("r2", "str", must_be_empty=True,
-             help="reserved — must be empty"),
+             help="reserved (must be empty)"),
      ArgSpec("mac1", "mac", example="6877248FA31A", allow_empty=True,
              help="12 hex chars, or empty. RCONF shows the first fields "
                   "fixed to 1057 and 300."),
@@ -553,7 +553,7 @@ register(Command(
     note="Documented in the PDF downlink list (#999# SMS form and RCONF "
          "GSEN field) but NOT whitelisted in Mictrack's own web tool. "
          "RCONF default shows T4=187, outside the documented [1,10] "
-         "range — treated as an internal encoding.",
+         "range; treated as an internal encoding.",
     source="pdf",
 ))
 
@@ -573,7 +573,7 @@ register(Command(
                               "0 = quiet.")],
     "DBG,<0|1>", "DBG,1", "DBG,ON", "OFF", Save.EXPLICIT,
     "Verbose diagnostics on the USB port (<Trace> lines: VBAT, network "
-    "state…). Increases power consumption — disable after testing.",
+    "state…). Increases power consumption; disable after testing.",
 ))
 
 register(Command(
@@ -581,7 +581,7 @@ register(Command(
     [ArgSpec("code", "str", example="984504615adacba7167bed1c16678fe5",
              help="Vendor-supplied key. Not validated; forwarded "
                   "verbatim.")],
-    "KEY,<code>", "KEY,984504615adacba7167bed1c16678fe5", "KEY,OK", "—",
+    "KEY,<code>", "KEY,984504615adacba7167bed1c16678fe5", "KEY,OK", "-",
     Save.EXPLICIT,
     "Apply a vendor licence/configuration key. Only useful with a key "
     "supplied by Mictrack or a reseller.",
@@ -591,18 +591,18 @@ register(Command(
 register(Command(
     "LTP", "Light tamper alert", Category.SENSORS,
     [ArgSpec("x", "bit")],
-    "LTP,<0|1>", "LTP,1", "LTP,ON", "—", Save.EXPLICIT,
+    "LTP,<0|1>", "LTP,1", "LTP,ON", "-", Save.EXPLICIT,
     "Light-sensor tamper alert (wake + alert when the device is opened "
     "or removed from its mount).",
     ignored_on_mt710=True,
-    note="MT700 feature — the MT710 has no light sensor; the command is "
+    note="MT700 feature: the MT710 has no light sensor; the command is "
          "accepted over USB but SILENTLY IGNORED by the firmware.",
     source="web",
 ))
 
 register(Command(
     "REBOOT", "Save & reboot", Category.SYSTEM, [], "REBOOT", "REBOOT",
-    "REBOOT,OK", "—", Save.SAVES_REBOOT,
+    "REBOOT,OK", "-", Save.SAVES_REBOOT,
     "Save all settings and reboot. The USB COM port lives in the cable, "
     "so the connection survives and the boot log streams in.",
 ))
@@ -611,7 +611,7 @@ register(Command(
     "RESET", "Factory reset", Category.SYSTEM, [], "RESET", "RESET",
     "RESET,OK (reply may be empty)", "factory defaults", Save.SAVES,
     "Erase ALL settings and restore factory defaults. Irreversible. "
-    "Does NOT reboot — the device stays connected.",
+    "Does NOT reboot; the device stays connected.",
 ))
 
 
@@ -627,7 +627,7 @@ def _validate_generic(cmd: Command, args: list[str]) -> Optional[str]:
     if not (cmd.min_args <= len(args) <= cmd.max_args):
         return (f"{cmd.keyword} needs "
                 f"{cmd.min_args if cmd.min_args == cmd.max_args else f'{cmd.min_args}–{cmd.max_args}'} "
-                f"field(s) — format: {cmd.format}")
+                f"field(s); format: {cmd.format}")
     for spec, raw in zip(cmd.args, args):
         if spec.must_be_empty and raw != "":
             return f"{cmd.keyword} field '{spec.name}' is reserved and must be empty"
@@ -666,7 +666,7 @@ def validate(line: str) -> tuple[bool, Optional[str]]:
 
     Rules mirror the web tool: suspicious characters → hard error;
     keyword must be exactly uppercase (the firmware ignores anything
-    else); unknown keywords are rejected — the device gives NO reply at
+    else); unknown keywords are rejected; the device gives NO reply at
     all to unknown commands; argument shapes are enforced per command.
     """
     line = line.strip()
@@ -683,7 +683,7 @@ def validate(line: str) -> tuple[bool, Optional[str]]:
     if keyword not in COMMANDS:
         prefix = keyword[:2].upper()
         close = [k for k in COMMANDS if k.startswith(prefix)]
-        hint = f" — did you mean {', '.join(close[:3])}?" if close else ""
+        hint = f": did you mean {', '.join(close[:3])}?" if close else ""
         return False, f"unknown command '{keyword}'{hint}"
     cmd = COMMANDS[keyword]
     validator = _SPECIAL_VALIDATORS.get(keyword)

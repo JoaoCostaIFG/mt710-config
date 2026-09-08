@@ -1,4 +1,4 @@
-"""Transport line-assembly tests — no real serial port needed."""
+"""Transport line-assembly tests (no real serial port needed)."""
 
 from mt710.transport import LineKind, SerialTransport, classify_line
 
@@ -45,7 +45,7 @@ def test_cr_and_n_arrive_separately():
 
 
 def test_idle_flush_partial_reply():
-    """Replies have no trailing newline — flush after the idle gap."""
+    """Replies have no trailing newline; flush after the idle gap."""
     t, events = make_transport()
     t._feed("\r\n<CFG>:ETS,OK")
     assert events == []  # leading blank dropped, partial still buffered

@@ -6,7 +6,7 @@ Mictrack_MT710_Commands_List.pdf:
 
 * 921600 baud, 8N1, DTR + RTS asserted after open (device stays silent
   without them).
-* Commands are written VERBATIM — no CR/LF terminator, no wrapper.
+* Commands are written VERBATIM (no CR/LF terminator, no wrapper).
 * Replies are ``\\r\\n`` separated but a single line may be split across
   reads, and ``\\r`` / ``\\n`` may arrive in separate chunks.
 * Command replies have NO trailing newline (e.g. ``\\r\\n<CFG>:ETS,OK``),
@@ -51,7 +51,7 @@ class PortInfo:
 
 
 def scan_ports() -> list[PortInfo]:
-    """List candidate ports. USB-serial devices (config cables) only —
+    """List candidate ports. USB-serial devices (config cables) only;
     legacy 8250 ttyS* ports are noise; fall back to everything if no
     USB port exists."""
     ports: list[PortInfo] = []
@@ -99,7 +99,7 @@ class SerialTransport:
     """Threaded serial reader + verbatim writer.
 
     Callbacks (``on_line``, ``on_rx``, ``on_disconnect``) are invoked from
-    the reader thread — GUIs must marshal them onto their own loop.
+    the reader thread; GUIs must marshal them onto their own loop.
     """
 
     def __init__(
@@ -167,7 +167,7 @@ class SerialTransport:
     # ── writing ────────────────────────────────────────────────────
 
     def write(self, command: str) -> None:
-        """Send a command VERBATIM — deliberately no CR/LF (device protocol)."""
+        """Send a command VERBATIM (deliberately no CR/LF; device protocol)."""
         if not self.is_open:
             raise SerialException("port not open")
         with self._write_lock:

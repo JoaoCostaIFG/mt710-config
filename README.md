@@ -3,7 +3,7 @@
 ![Mictrack MT710 GPS tracker](assets/mt710-photo.jpg)
 
 A terminal UI for configuring and monitoring the **Mictrack MT710** GPS
-tracker over its USB config cable — a local, more complete alternative to
+tracker over its USB config cable: a local, more complete alternative to
 <https://config.mictrack.com>.
 
 ```
@@ -19,36 +19,36 @@ tracker over its USB config cable — a local, more complete alternative to
 
 ## Features
 
-- **Live serial console** — verbatim device output (`<Trace>:` debug
+- **Live serial console**: verbatim device output (`<Trace>:` debug
   chatter dimmed), timestamps, autoscroll pause, save-to-file, and a
   live activity ticker (`↓bytes ↑bytes · last RX 4s ago`) so a quiet
   device is never mistaken for a broken console. Note: the MT710 is
   silent on USB except when answering commands (reports go over the
-  cellular link) — that ticker is how you tell.
-- **Connection status pill** — `◌ DISCONNECTED` / `… CONNECTING` /
+  cellular link). That ticker is how you tell.
+- **Connection status pill**: `◌ DISCONNECTED` / `… CONNECTING` /
   `● CONNECTED` plus a clickable Connect (F2) button; a separate
   `● ETS` badge tracks the config session (it ends on reboot or `QTS`).
-- **Debug toggle** — one-click `DBG: on/off` button in the console
+- **Debug toggle**: one-click `DBG: on/off` button in the console
   header (sends `ETS → DBG,x → QTS`, state auto-detected from RCONF and
-  reply echoes). Debug increases power use — toggle off when done.
-- **Raw command bar** — hardware-accurate validation (exact rules from
+  reply echoes). Debug increases power use; toggle off when done.
+- **Raw command bar**: hardware-accurate validation (exact rules from
   Mictrack's own web tool), ↑/↓ history, 30+ presets, auto-uppercase of
   the keyword, confirm gate on `RESET`, "force send" escape hatch.
-  Every send attempt leaves a trace in the feed — including rejections
+  Every send attempt leaves a trace in the feed, including rejections
   (invalid, not connected, no ETS session).
-- **Full command reference** — every MT710 USB command with format,
+- **Full command reference**: every MT710 USB command with format,
   parameter ranges, defaults, expected replies, save semantics and
   per-command explanations merged from the official PDFs *and* the
-  hardware-validated web tool — including every known documentation
+  hardware-validated web tool, including every known documentation
   discrepancy, flagged inline.
 - **All 11 working modes** (0–10 + LOCK) with contextual parameter
-  inputs and power-behaviour notes — the web tool only exposes four.
+  inputs and power-behaviour notes; the web tool only exposes four.
 - **Setup forms** (scrollable) populated automatically from the device's
   RCONF, with per-section include checkboxes and a review-before-send
   apply flow (MODE last, auto-REBOOT if needed, reboot watchdog).
-- **Batch runner** — multi-command textarea, per-line validation preview,
+- **Batch runner**: multi-command textarea, per-line validation preview,
   import/export of web-tool-compatible `#`-commented command files.
-- **Device info** — friendly RCONF grid with explanations + raw dump.
+- **Device info**: friendly RCONF grid with explanations + raw dump.
 
 ## Install
 
@@ -58,7 +58,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
 
-# or with uv (what this repo currently uses — venv has no pip)
+# or with uv (what this repo currently uses; venv has no pip)
 uv venv .venv
 source .venv/bin/activate
 uv pip install -e .
@@ -92,12 +92,12 @@ clickable; everything also works keyboard-only.
 ## Protocol notes (implemented in `src/mt710/`)
 
 - 921600 baud 8N1, DTR+RTS asserted on open.
-- Commands are sent **verbatim — no CR/LF terminator**; replies are
+- Commands are sent **verbatim** (no CR/LF terminator); replies are
   `\r\n`-separated, prefixed `<CFG>:`, with no trailing newline (250 ms
   idle-flush reassembles them).
 - `ETS` opens the config session (3 tries × 1.8 s); the session dies on
   reboot/boot-banner and is tracked passively.
-- Unknown or lowercase commands get **no reply at all** — hence the
+- Unknown or lowercase commands get **no reply at all**, hence the
   validator.
 - `MODE`/`REBOOT` save + reboot, `QTS` saves without rebooting, `RESET`
   wipes to factory defaults without rebooting; everything else needs an
@@ -109,7 +109,7 @@ clickable; everything also works keyboard-only.
 |---|---|---|
 | `MODE,1` interval | 60–600 s (one table) vs 10–600 s (others) | 10–600 s |
 | `NWM,0,0,2` | not documented | supported (confirmed on real MT710) |
-| `LTP` | listed in web tool | flagged *ignored* — MT710 has no light sensor |
+| `LTP` | listed in web tool | flagged *ignored* (MT710 has no light sensor) |
 | `XTRA`,`SCAN`,`SEARCH`,`AP`,`GEO` | missing from PDF USB table | supported |
 | `GSEN` | PDF-only (SMS `#999#`) | supported, T4=187 quirk noted |
 | `RCONF,1..4` | paged dumps (downlink only) | USB `RCONF` returns all |
@@ -117,7 +117,7 @@ clickable; everything also works keyboard-only.
 ## Tests
 
 ```bash
-.venv/bin/python -m pytest
+python -m pytest
 ```
 
 156 cases: command validator matrix, RCONF parser (real PDF dump),
@@ -136,21 +136,21 @@ Programmable over USB, SMS or platform downlink.
 
 ## Sources & disclaimer
 
-This is an **independent, community tool** — not affiliated with,
+This is an **independent, community tool**, not affiliated with,
 endorsed by, or supported by Mictrack.
 
 Documentation sources used to build it:
 
-- `mictrack_mt710_docs/` — official Mictrack PDFs (command lists + user
+- `mictrack_mt710_docs/`: official Mictrack PDFs (command lists + user
   manual), redistributed here for interoperability. Copyright Mictrack;
   see their [site](https://www.mictrack.com) for originals.
-- The public web config tool (config.mictrack.com v1.2.32) — its
+- The public web config tool (config.mictrack.com v1.2.32); its
   client-side JS was studied to extract hardware-validated validator
   rules and protocol timings.
 - Live testing against a real MT710 (FW V2.1.8).
 
 "Mictrack" and "MT710" are trademarks of Mictrack; LEDs, modes and
 firmware behaviour described here come from the vendor's own documents
-and may change with firmware updates — **always verify against your own
+and may change with firmware updates; **always verify against your own
 device** (the tool's Reference tab documents every known discrepancy
 between sources).

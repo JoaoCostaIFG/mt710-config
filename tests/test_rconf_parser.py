@@ -71,7 +71,7 @@ def test_parse_web_dump_variant():
     """Dump shape emitted by the web tool's mock (fields with spaces)."""
     dump = parse_rconf_lines(
         ["MDL:MT710  ID:862255061984701  SV:V2.1.6  CCID:89860112345678900881"])
-    # a single spaced line is one KEY:value entry — key is MDL
+    # a single spaced line is one KEY:value entry; key is MDL
     assert dump.get("MDL") == "MT710  ID:862255061984701  SV:V2.1.6  CCID:89860112345678900881"
 
 

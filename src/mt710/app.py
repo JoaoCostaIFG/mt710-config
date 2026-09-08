@@ -1,9 +1,9 @@
-"""MT710 Config Tool — Textual TUI.
+"""MT710 Config Tool (Textual TUI).
 
 Layout:
-  · status bar      — port, connection, device identity, ETS session state
-  · left column     — tabs: Setup / Device / Reference / Guide / Batch
-  · right column    — live serial console + raw command bar
+  · status bar       port, connection, device identity, ETS session state
+  · left column      tabs: Setup / Device / Reference / Guide / Batch
+  · right column     live serial console + raw command bar
 """
 
 from __future__ import annotations
@@ -193,7 +193,7 @@ class MT710App(App[None]):
     #console { height: 1fr; }
 
     #rawbar { height: auto; dock: bottom; padding: 0 1; }
-    /* Textual containers default to 1fr height — the input/button row must
+    /* Textual containers default to 1fr height; the input/button row must
        shrink to its content or it starves the console above it */
     #rawbar Horizontal { height: auto; }
     #rawbar HistoryInput { width: 1fr; }
@@ -317,7 +317,7 @@ class MT710App(App[None]):
                 with Vertical(id="rawbar"):
                     with Horizontal():
                         yield HistoryInput(
-                            placeholder="raw command — e.g. RCONF  (↑/↓ history, Enter sends)",
+                            placeholder="raw command, e.g. RCONF  (↑/↓ history, Enter sends)",
                             id="raw_input")
                         yield Button("Send", id="btn_raw_send",
                                      variant="primary")
@@ -357,7 +357,7 @@ class MT710App(App[None]):
                        Input(placeholder="APN password", id="f_apn_pass"),
                        classes="row"),
             Horizontal(Label("Server"), Input(
-                placeholder="domain or IP — no http://", id="f_srv"),
+                placeholder="domain or IP (no http://)", id="f_srv"),
                 classes="row"),
             Horizontal(Label("Port"), Input(placeholder="e.g. 5030 / 7700",
                                             id="f_port"),
@@ -370,17 +370,17 @@ class MT710App(App[None]):
                               prompt="Region", id="f_region",
                               allow_blank=True), classes="row"),
             Horizontal(Label("NWM"), Input(placeholder="auto from region "
-                                      "— e.g. 0,0,2", id="f_nwm"),
+                                       "e.g. 0,0,2", id="f_nwm"),
                        classes="row"),
             Horizontal(Label("BAND"), Input(placeholder="auto from region "
-                                      "— e.g. 0,0,f", id="f_band"),
+                                       "e.g. 0,0,f", id="f_band"),
                        classes="row"),
             classes="section", id="sec_net",
         )
 
     def _section_mode(self):
-        modes = [("— keep current —", "keep")] + [
-            (f"MODE,{n} — {MODE_NAMES[n]}", n)
+        modes = [("(keep current)", "keep")] + [
+            (f"MODE,{n}: {MODE_NAMES[n]}", n)
             for n in sorted(MODE_NAMES, key=int)]
         yield Vertical(
             Static("Working Mode", classes="section-title"),
@@ -420,27 +420,27 @@ class MT710App(App[None]):
                        Input(placeholder="5-60 min (modes 2/5)",
                              id="f_hbc"), classes="row"),
             Horizontal(Label("Last known LEP"),
-                       Select([("0 — report invalid", "0"),
-                               ("1 — report last position", "1")],
+                       Select([("0: report invalid", "0"),
+                               ("1: report last position", "1")],
                               prompt="LEP", id="f_lep", allow_blank=True),
                        classes="row"),
             Horizontal(Label("LBS"),
                        Input(placeholder="0-3", id="f_lbs"), classes="row"),
             Horizontal(Label("AGPS"),
-                       Select([("0 — off", "0"), ("1 — on", "1")],
-                              prompt="AGPS", id="f_agps",
-                              allow_blank=True), classes="row"),
-            Horizontal(Label("XTRA"),
-                       Select([("0 — off", "0"), ("1 — on", "1")],
+                       Select([("0: off", "0"), ("1: on", "1")],
+                               prompt="AGPS", id="f_agps",
+                               allow_blank=True), classes="row"),
+             Horizontal(Label("XTRA"),
+                        Select([("0: off", "0"), ("1: on", "1")],
                               prompt="XTRA", id="f_xtra",
                               allow_blank=True), classes="row"),
             Horizontal(Label("Priority PRIOR"),
-                       Select([("0 — GPS first", "0"),
-                               ("1 — WiFi first", "1")],
+                       Select([("0: GPS first", "0"),
+                               ("1: WiFi first", "1")],
                               prompt="PRIOR", id="f_prior",
                               allow_blank=True), classes="row"),
             Horizontal(Label("Power btn MSW"),
-                       Select([("0 — disabled", "0"), ("1 — enabled", "1")],
+                       Select([("0: disabled", "0"), ("1: enabled", "1")],
                               prompt="MSW", id="f_msw", allow_blank=True),
                        classes="row"),
             Horizontal(Label("Timezone 896"),
@@ -491,7 +491,7 @@ class MT710App(App[None]):
         ports = scan_ports()
         st = self.query_one("#st_port", Static)
         if not ports:
-            st.update("[b]port:[/b] none found — plug the USB config cable")
+            st.update("[b]port:[/b] none found; plug the USB config cable")
             return
         self._ports = {p.device: p for p in ports}
         default = (self.initial_port if self.initial_port in self._ports
@@ -522,7 +522,7 @@ class MT710App(App[None]):
     # ── session plumbing ──────────────────────────────────────────
 
     def _session_event(self, event: str, data: dict) -> None:
-        """Session callback — may be invoked from the reader thread, a
+        """Session callback; may be invoked from the reader thread, a
         worker thread, OR the UI thread itself (e.g. raw-bar sends call
         send_raw() directly). call_from_thread() is invalid on the app's
         own thread, so dispatch accordingly."""
@@ -532,7 +532,7 @@ class MT710App(App[None]):
             else:
                 self.call_from_thread(self._handle_session_event, event, data)
         except Exception as exc:  # noqa: BLE001
-            # surface instead of dying silently — unless the app is closing
+            # surface instead of dying silently; unless the app is closing
             try:
                 if self.is_running:
                     self.call_from_thread(
@@ -583,7 +583,7 @@ class MT710App(App[None]):
     def _rx_age_text(self) -> str:
         age = self._rx_age_s()
         if age is None:
-            return "—"
+            return "-"
         if age < 60:
             return f"{age:.0f}s ago"
         return f"{age/60:.0f}m ago"
@@ -640,12 +640,12 @@ class MT710App(App[None]):
             self.notify("Not connected (F2)", severity="warning")
             return
         if self._dbg_on is None:
-            self.notify("DBG state unknown — press F5 to read config first",
+            self.notify("DBG state unknown; press F5 to read config first",
                         severity="warning")
             return
         target = 0 if self._dbg_on else 1
         if target == 1:
-            self.notify("Enabling debug output — increases power use; "
+            self.notify("Enabling debug output (increases power use; "
                         "toggle off when done monitoring")
         self.run_worker(lambda: self._dbg_worker(target), thread=True,
                         exclusive=True)
@@ -656,7 +656,7 @@ class MT710App(App[None]):
         # rebooting (same sequence as the official web tool)
         if not self.session.ensure_ts():
             self.call_from_thread(self._console_warn,
-                                  "could not wake device (ETS) — DBG not set")
+                                  "could not wake device (ETS); DBG not set")
             return
         cmds = [f"DBG,{target}", "QTS"]
         results = self.session.run_batch(cmds)
@@ -670,7 +670,7 @@ class MT710App(App[None]):
         if target == 1:
             self.call_from_thread(
                 self._console_ok,
-                "debug output ON — <Trace> lines will stream in the console "
+                "debug output ON; <Trace> lines will stream in the console "
                 "(GPS/voltage/network state). Battery drains faster; toggle "
                 "off when done.")
 
@@ -860,7 +860,7 @@ class MT710App(App[None]):
             for kw in sorted(COMMANDS):
                 cmd = COMMANDS[kw]
                 if cmd.category is cat:
-                    title = f"{kw} — {cmd.title}"
+                    title = f"{kw}: {cmd.title}"
                     if cmd.mt710_only:
                         title += "  (MT710)"
                     if cmd.ignored_on_mt710:
@@ -882,7 +882,7 @@ class MT710App(App[None]):
 
     def _show_reference(self, kw: str) -> None:
         cmd = COMMANDS[kw]
-        lines = [f"[b]{kw}[/b] — {cmd.title}",
+        lines = [f"[b]{kw}[/b]: {cmd.title}",
                 f"[dim]category: {cmd.category.value} · "
                 f"save: {self._save_label(cmd)}[/]", ""]
         lines.append(f"[b]format[/b]:  {escape(cmd.format)}")
@@ -943,7 +943,7 @@ class MT710App(App[None]):
                 "Pick a mode to see its parameters and power profile.")
             return
         n = str(mode)
-        text = f"MODE,{n} — {MODE_NAMES[n]}\n{MODE_EXPLAIN[n]}"
+        text = f"MODE,{n}: {MODE_NAMES[n]}\n{MODE_EXPLAIN[n]}"
         self.query_one("#modehelp", Static).update(escape(text))
 
     def on_select_changed(self, event: Select.Changed) -> None:
@@ -978,7 +978,7 @@ class MT710App(App[None]):
             extra = ""
             if cmd:
                 if cmd.ignored_on_mt710:
-                    extra = " — ignored by MT710 firmware"
+                    extra = " (ignored by MT710 firmware)"
                     label.set_classes("warn")
                 else:
                     label.set_classes("ok")
@@ -990,7 +990,7 @@ class MT710App(App[None]):
 
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input.id == "raw_input":
-            # auto-uppercase the keyword — the firmware ignores lowercase
+            # auto-uppercase the keyword; the firmware ignores lowercase
             v = event.input.value
             kw, sep, rest = v.partition(",")
             if kw and kw != kw.upper():
@@ -1009,8 +1009,8 @@ class MT710App(App[None]):
             return
         ok, reason = self._validate_raw(cmd)
         if not ok and not force:
-            self._console_warn(f"✗ not sent: {cmd} — {reason}")
-            self.notify(f"Not sent — {reason}", severity="warning")
+            self._console_warn(f"✗ not sent: {cmd}; {reason}")
+            self.notify(f"Not sent; {reason}", severity="warning")
             return
         if cmd == "RESET":
             def _cb(confirmed: bool | None) -> None:
@@ -1027,7 +1027,7 @@ class MT710App(App[None]):
     def _dispatch_raw(self, cmd: str) -> None:
         if not self.session:
             self._console_warn(
-                f"✗ not sent: {cmd} — NOT CONNECTED (press F2 to connect; "
+                f"✗ not sent: {cmd}; NOT CONNECTED (press F2 to connect; "
                 "the command was kept in the input box)")
             self.notify("Not connected (F2)", severity="error")
             return
@@ -1037,13 +1037,13 @@ class MT710App(App[None]):
         self.query_one("#rawvalid", Static).update("")
         if not self.session.ets_active:
             self._console_warn(
-                "no ETS session — the device may ignore this command "
+                "no ETS session; the device may ignore this command "
                 "(pick 'START session' from the presets, or F2/F5 to wake "
                 "it first)")
         try:
             self.session.send_raw(cmd)
         except Exception as exc:  # noqa: BLE001
-            self._console_warn(f"✗ send failed: {cmd} — {exc}")
+            self._console_warn(f"✗ send failed: {cmd}; {exc}")
 
     # ── connect / disconnect ──────────────────────────────────────
 
@@ -1078,13 +1078,13 @@ class MT710App(App[None]):
         self.session = session
         self.call_from_thread(self._set_conn, "connected")
         self.call_from_thread(self._console_ok,
-                              f"connected to {port} @ 921600 8N1 — "
+                              f"connected to {port} @ 921600 8N1; "
                               "waking device (ETS)…")
         ok = session.ets_handshake()
         if not ok:
             self.call_from_thread(
                 self._console_warn,
-                "no ETS reply — device may be asleep or off "
+                "no ETS reply; device may be asleep or off "
                 "(blue LED should be on). You can still watch the console; "
                 "press F2 twice to retry.")
             return
@@ -1092,11 +1092,11 @@ class MT710App(App[None]):
         dump = session.read_config()
         if dump:
             self.call_from_thread(self._console_ok,
-                                  f"RCONF ok — {dump.model} "
+                                  f"RCONF ok; {dump.model} "
                                   f"FW {dump.firmware}")
         else:
             self.call_from_thread(self._console_warn,
-                                  "RCONF gave no data — try F5")
+                                  "RCONF gave no data; try F5")
 
     def _connect_failed(self, reason: str) -> None:
         self._set_conn("disconnected")
@@ -1114,7 +1114,7 @@ class MT710App(App[None]):
         dump = self.session.read_config()
         if not dump:
             self.call_from_thread(self._console_warn,
-                                  "RCONF gave no data — device asleep? "
+                                  "RCONF gave no data; device asleep? "
                                   "ETS retry happens automatically.")
 
     # ── apply flow ────────────────────────────────────────────────
@@ -1131,13 +1131,13 @@ class MT710App(App[None]):
             if apn:
                 cmds.append(f"803,{apn},{user},{pwd}")
             else:
-                problems.append("APN empty — network section incomplete")
+                problems.append("APN empty; network section incomplete")
             srv = self.query_one("#f_srv", Input).value.strip()
             port = self.query_one("#f_port", Input).value.strip()
             if srv and port:
                 cmds.append(f"804,{srv},{port}")
             else:
-                problems.append("server/port incomplete — 804 skipped")
+                problems.append("server/port incomplete; 804 skipped")
             proto = self.query_one("#f_proto", Input).value.strip().upper()
             if proto in ("TCP", "UDP"):
                 cmds.append(f"800,{proto}")
@@ -1291,12 +1291,12 @@ class MT710App(App[None]):
                                   severity="warning")
         elif reboot:
             self.call_from_thread(self._console_ok,
-                                  "device is rebooting — boot log below; "
+                                  "device is rebooting; boot log below; "
                                   "watchdog active")
             self._start_watchdog()
         else:
             self.call_from_thread(self._console_ok,
-                                  "batch complete — remember settings only "
+                                  "batch complete; remember settings only "
                                   "persist after MODE/REBOOT/QTS")
 
     def _start_watchdog(self) -> None:
@@ -1315,7 +1315,7 @@ class MT710App(App[None]):
                         > REBOOT_WATCHDOG_S:
                     self.call_from_thread(
                         self._console_warn,
-                        f"no output for {REBOOT_WATCHDOG_S:.0f}s — the "
+                        f"no output for {REBOOT_WATCHDOG_S:.0f}s; the "
                         "device may have gone to sleep (press its power "
                         "button once) or finished booting silently")
                     return
@@ -1335,7 +1335,7 @@ class MT710App(App[None]):
             return
         bad = [(line, reason) for (line, ok, reason) in results if not ok]
         if bad:
-            body = "\n".join(f"✗ {l} — {r}" for l, r in bad)
+            body = "\n".join(f"✗ {l}: {r}" for l, r in bad)
             label.update(f"[b]invalid lines[/b]\n{escape(body)}")
             label.set_classes("err")
         else:
@@ -1352,7 +1352,7 @@ class MT710App(App[None]):
         results = validate_batch(self._batch_lines())
         bad = [(line, reason) for (line, ok, reason) in results if not ok]
         if bad:
-            self.notify(f"{len(bad)} invalid line(s) — validate first",
+            self.notify(f"{len(bad)} invalid line(s); validate first",
                         severity="error")
             return
         if not results:
@@ -1385,7 +1385,7 @@ class MT710App(App[None]):
         path = self.query_one("#io_path", Input).value.strip() or \
             "config.txt"
         lines = self._batch_lines()
-        body = ["# MT710 Config Tool — command list",
+        body = ["# MT710 Config Tool: command list",
                 f"# Generated {_dt.datetime.now():%Y-%m-%d %H:%M:%S}",
                 "# Sent top-to-bottom; MODE is applied last (auto-saves "
                 "& reboots)."]
@@ -1406,7 +1406,7 @@ class MT710App(App[None]):
             return
         cmds, problems = self._build_apply_commands()
         if not cmds:
-            self.notify("nothing to send — fill the Setup form",
+            self.notify("nothing to send; fill the Setup form",
                         severity="warning")
             return
         body = "\n".join(cmds)
@@ -1450,7 +1450,7 @@ def probe(port: str | None) -> int:
     session.open()
     _time.sleep(0.5)
     if not session.ets_handshake():
-        print("ETS: no reply — device asleep or off?")
+        print("ETS: no reply; device asleep or off?")
         session.close()
         return 2
     dump = session.read_config(force_ets=False)

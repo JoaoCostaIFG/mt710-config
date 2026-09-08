@@ -22,7 +22,7 @@ RCONF_FIELDS: dict[str, tuple[str, str]] = {
     "HV": ("Hardware version", "Hardware revision."),
     "MV": ("Module version", "Cellular module firmware (e.g. Quectel BG96)."),
     "ISD": ("Firmware date", "Firmware release date (DD/MM/YY)."),
-    "NET": ("Protocol", "TCP or UDP — transport used towards the server "
+    "NET": ("Protocol", "TCP or UDP: transport used towards the server "
                         "(see command 800)."),
     "GU": ("GPRS credentials", "GPRS username/password baked into reports; "
                                "ignorable when parsing on the server."),
@@ -61,9 +61,9 @@ RCONF_FIELDS: dict[str, tuple[str, str]] = {
                             "ignored by MT710)."),
     "TZ": ("Timezone", "Device timezone ×60 min (MODE 6 only)."),
     "GSEN": ("Vibration sensor", "wake/vibrate thresholds (mg), "
-            "sensitivity count, vibrate time — see GSEN command."),
+            "sensitivity count, vibrate time; see GSEN command."),
     "ANG": ("Angle sensor", "Reserved (0,0,0)."),
-    "PRIOR": ("Positioning priority", "GNSS (GPS first) or WIFI — "
+    "PRIOR": ("Positioning priority", "GNSS (GPS first) or WIFI; "
                                       "MODE 3 only."),
     "CCID": ("ICCID", "SIM card integrated circuit card ID."),
     "IMSI": ("IMSI", "SIM international mobile subscriber identity."),
@@ -76,8 +76,8 @@ RCONF_FIELDS: dict[str, tuple[str, str]] = {
     "BAT": ("Battery", "Battery voltage/level, when reported."),
     "CSQ": ("Signal", "Cellular signal strength, when reported."),
     "LIC": ("Licence", "Internal licence check (OK)."),
-    "AU": ("Author", "Internal — firmware author."),
-    "IN": ("End marker", "Internal — marks the end of the RCONF dump."),
+    "AU": ("Author", "Internal; firmware author."),
+    "IN": ("End marker", "Internal; marks the end of the RCONF dump."),
 }
 
 # fields hidden from the friendly grid (internal / noise)
@@ -95,7 +95,7 @@ RCONF_ORDER = ["MDL", "MODEL", "ID", "SV", "MV", "HV", "ISD", "CCID",
 def mode_table() -> str:
     rows = []
     for n in sorted(MODE_EXPLAIN, key=int):
-        rows.append(f"MODE,{n} — {MODE_NAMES[n]}\n    {MODE_EXPLAIN[n]}")
+        rows.append(f"MODE,{n}: {MODE_NAMES[n]}\n    {MODE_EXPLAIN[n]}")
     return "\n\n".join(rows)
 
 
@@ -105,7 +105,7 @@ GUIDE_SECTIONS: list[tuple[str, str]] = [
     ("Getting started", (
         "1. Connect the USB Config Cable (Prolific/CH340/CP210x/FTDI) "
         "to the tracker's charging contacts.\n"
-        "2. Power the device on with the SOS button — the blue LED must "
+        "2. Power the device on with the SOS button; the blue LED must "
         "be lit.\n"
         "3. Pick the serial port and press Connect. The tool opens the "
         "port at 921600 8N1, raises DTR/RTS, wakes the device with ETS "
@@ -114,7 +114,7 @@ GUIDE_SECTIONS: list[tuple[str, str]] = [
     ("The ETS session", (
         "ETS (Enter To Set) wakes the tracker and opens the config "
         "session. Without it most commands are silently dropped.\n"
-        "· While booting the device answers 'WAIT CONFIG CMD......' — "
+        "· While booting the device answers 'WAIT CONFIG CMD......'; "
         "just retry (the tool tries 3×).\n"
         "· The session ends when the device reboots, power-cycles or "
         "changes MODE. The tool tracks this passively and re-handshakes "
@@ -125,7 +125,7 @@ GUIDE_SECTIONS: list[tuple[str, str]] = [
     ("Saving settings", (
         "· Most commands only stage a change; nothing is stored until a "
         "save happens.\n"
-        "· MODE saves AND reboots — that's why it is always sent last.\n"
+        "· MODE saves AND reboots; that's why it is always sent last.\n"
         "· REBOOT saves and reboots without changing the mode.\n"
         "· QTS saves and exits config mode WITHOUT rebooting.\n"
         "· RESET wipes everything to factory defaults (no reboot).\n"
@@ -174,16 +174,16 @@ GUIDE_SECTIONS: list[tuple[str, str]] = [
         "· NB-IoT          same band list\n"
         "· GSM             850/900/1800/1900 MHz quad-band\n\n"
         + "\n".join(f"· NWM,{k} = {v}" for k, v in NWM_VALUES.items()) +
-        "\n\nLock bands with BAND,<catM1>,<nbiot>,f — 0 means automatic "
+        "\n\nLock bands with BAND,<catM1>,<nbiot>,f; 0 means automatic "
         "and the third field is literally 'f' (GSM fixed quad-band). "
         "Australia/NZ: lock LTE-M band 28 (BAND,28,0,f)."
     )),
     ("Home zone (MODE 8)", (
         "Home Mode sleeps while the device is indoors near its Home "
         "zone and tracks at 10–60 s intervals once outdoors and moving.\n"
-        "· AP,,,mac1,mac2,mac3 — up to 3 WiFi MAC addresses (12 hex "
+        "· AP,,,mac1,mac2,mac3: up to 3 WiFi MAC addresses (12 hex "
         "chars each) that identify 'home'.\n"
-        "· GEO,lat,lng,radius — a geofence circle (30–300 m) as home.\n"
+        "· GEO,lat,lng,radius: a geofence circle (30–300 m) as home.\n"
         "· SCAN lists surrounding MAC addresses; SEARCH reports the "
         "current position to use as the centre."
     )),
@@ -196,7 +196,7 @@ GUIDE_SECTIONS: list[tuple[str, str]] = [
         "· NWM,0,0,2 (LTE-M + 2G fallback): not in the PDF, confirmed "
         "working on real hardware by Mictrack's web tool → supported.\n"
         "· LTP: listed in the web tool, but the MT710 has no light "
-        "sensor — the firmware silently ignores it (MT700 feature).\n"
+        "sensor; the firmware silently ignores it (MT700 feature).\n"
         "· XTRA / SCAN / SEARCH / AP / GEO: missing from the PDF USB "
         "table but work over USB/ETS.\n"
         "· GSEN: documented in the PDF (SMS #999#) but NOT whitelisted "
@@ -214,7 +214,7 @@ GUIDE_SECTIONS: list[tuple[str, str]] = [
         "at all; the validator catches most cases.\n"
         "· IMEI shows empty right after boot → the cellular module is "
         "still initialising; re-read RCONF in a few seconds.\n"
-        "· After REBOOT the port stays valid (it lives in the cable) — "
+        "· After REBOOT the port stays valid (it lives in the cable); "
         "watch the boot log, then re-run ETS."
     )),
 ]
