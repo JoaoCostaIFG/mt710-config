@@ -7,6 +7,8 @@ name = "mt710-config"
 version = "0.1.2"
 description = "USB configuration tool & serial console for the Mictrack MT710 GPS tracker"
 requires-python = ">=3.10"
+license = "EUPL-1.2"
+license-files = ["LICENSE"]
 dependencies = [
     "pyserial>=3.5",
     "textual>=0.80.0",

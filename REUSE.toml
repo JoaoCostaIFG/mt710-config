@@ -1,0 +1,13 @@
+version = 1
+
+[[annotations]]
+path = "**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Joao Costa <me@joaocosta.dev>"
+SPDX-License-Identifier = "EUPL-1.2"
+
+[[annotations]]
+path = ["mictrack_mt710_docs/**", "assets/mt710-photo.jpg"]
+precedence = "override"
+SPDX-FileCopyrightText = "Mictrack"
+SPDX-License-Identifier = "LicenseRef-Mictrack-Proprietary"

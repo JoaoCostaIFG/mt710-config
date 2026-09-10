@@ -1,0 +1,5 @@
+Proprietary documentation and product imagery of Mictrack (Shenzhen Mictrack Co., Ltd).
+
+Redistributed unmodified in this repository solely for interoperability and
+reference purposes. No license is granted; all rights remain with the
+copyright holder.

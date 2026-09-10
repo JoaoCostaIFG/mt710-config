@@ -154,3 +154,10 @@ firmware behaviour described here come from the vendor's own documents
 and may change with firmware updates; **always verify against your own
 device** (the tool's Reference tab documents every known discrepancy
 between sources).
+
+## License
+
+Code and documentation in this repository are licensed under the
+European Union Public Licence v. 1.2 (EUPL-1.2), except
+`mictrack_mt710_docs/` and `assets/mt710-photo.jpg`, which are
+proprietary Mictrack material kept for interoperability/reference.
